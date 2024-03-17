@@ -1,0 +1,21 @@
+{
+  "config": {
+    "default": {
+      "bluetooth": {
+        "primaryService": "heart_rate",
+        "characteristic": "heart_rate_measurement",
+        "attemptsToFindTheDevice": 5
+      },
+      "serial": { "baudRate": 115200, "delimiter": "\r\n" }
+    },
+    "user": {
+      "bluetooth": {
+        "primaryService": "heart_rate",
+        "characteristic": "heart_rate_measurement",
+        "attemptsToFindTheDevice": 5
+      },
+      "serial": { "baudRate": 115200, "delimiter": "\r\n" }
+    }
+  },
+  "data": []
+}
