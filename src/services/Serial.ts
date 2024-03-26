@@ -6,35 +6,39 @@ export default class SerialService {
 
   constructor(window: BrowserWindow) {
     ipcMain.on("get-serial-port-list", async () => {
-      window.webContents.send("serial-port-list", await this.listPorts());
+      window.webContents.send("serial-port-list", await this._listPorts());
     });
 
     ipcMain.on(
       "connect-serial-port",
       async (_, path: string, baudRate: number, delimiter: string) => {
-        this.connect(window, path, baudRate);
-        if (this.connectedPort) {
-          const parser = this.connectedPort.pipe(
-            new ReadlineParser({ delimiter })
+        this._connect(window, path, baudRate);
+        if (this._connectedPort) {
+          const parser = this._connectedPort.pipe(
+            new ReadlineParser({ delimiter, includeDelimiter: true })
           );
           parser.on("data", (reading) => {
-            const parsedReading = Number(reading.toString("utf8"));
-            if (!isNaN(parsedReading)) {
-              window.webContents.send("serial-port-reading", parsedReading);
-            }
+            window.webContents.send(
+              "serial-port-reading",
+              reading.toString("utf8")
+            );
           });
         }
       }
     );
 
-    ipcMain.on("disconnect-serial-port", () => this.disconnect(window));
+    ipcMain.on("serial-port-writing", (_, writing: string) =>
+      this._write(writing)
+    );
+
+    ipcMain.on("disconnect-serial-port", () => this._disconnect(window));
   }
 
-  public async listPorts() {
+  private async _listPorts() {
     return await SerialPort.list();
   }
 
-  public connect(window: BrowserWindow, path: string, baudRate: number) {
+  private _connect(window: BrowserWindow, path: string, baudRate: number) {
     this._connectedPort = new SerialPort({ path, baudRate }, (error) => {
       if (error) {
         this._connectedPort = null;
@@ -43,21 +47,23 @@ export default class SerialService {
         window.webContents.send(
           "serial-port-connected",
           true,
-          this.connectedPort?.path
+          this._connectedPort!.path
         );
       }
     });
   }
 
-  public disconnect(window: BrowserWindow) {
+  private _write(writing: string) {
+    if (this._connectedPort) {
+      this._connectedPort.write(writing);
+    }
+  }
+
+  private _disconnect(window: BrowserWindow) {
     if (this._connectedPort) {
       this._connectedPort.close();
     }
     this._connectedPort = null;
     window.webContents.send("serial-port-connected", false, "");
-  }
-
-  public get connectedPort() {
-    return this._connectedPort;
   }
 }

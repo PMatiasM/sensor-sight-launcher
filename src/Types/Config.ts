@@ -4,6 +4,10 @@ export type Config = {
     characteristic: string;
     attemptsToFindTheDevice: number;
   };
+  network: {
+    URI: string;
+    requestInterval: number;
+  };
   serial: {
     baudRate: number;
     delimiter: string;

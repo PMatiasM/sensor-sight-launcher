@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import { join } from "node:path";
 import { config } from "./config";
 import DatabaseService from "./services/Database";
@@ -11,12 +11,17 @@ function createWindow() {
     height: 720,
     resizable: false,
     fullscreen: false,
+    frame: false,
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, "preloads", "preload.js"),
       experimentalFeatures: true,
+      // devTools: false,
     },
   });
+
+  ipcMain.on("minimize", () => win.minimize());
+  ipcMain.on("close", () => win.close());
 
   const databaseService = new DatabaseService(win);
   const bluetoothService = new BluetoothService(win);

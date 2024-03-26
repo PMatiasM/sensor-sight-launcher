@@ -1,10 +1,14 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { PortInfo } from "@serialport/bindings-interface";
-import { Config } from "../Types/Config";
-import { Data } from "../Types/Data";
+import { Config } from "../types/Config";
+import { Data } from "../types/Data";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   // Main
+  minimize: () => ipcRenderer.send("minimize"),
+  close: () => ipcRenderer.send("close"),
+
+  // Database
   getConfig: () => ipcRenderer.send("get-config"),
   config: (
     callback: (event: Electron.IpcRendererEvent, config: Config) => void
@@ -41,8 +45,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   connectSerialPort: (path: string, baudRate: number, delimiter: string) =>
     ipcRenderer.send("connect-serial-port", path, baudRate, delimiter),
   serialPortReading: (
-    callback: (event: Electron.IpcRendererEvent, reading: number) => void
+    callback: (event: Electron.IpcRendererEvent, reading: string) => void
   ) => ipcRenderer.on("serial-port-reading", callback),
+  serialPortWriting: (writing: string) =>
+    ipcRenderer.send("serial-port-writing", writing),
   serialPortConnected: (
     callback: (
       event: Electron.IpcRendererEvent,

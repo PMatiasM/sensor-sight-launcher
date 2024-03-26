@@ -1,4 +1,4 @@
-import { CONNECTION } from "../Enums/Connection";
+import { CONNECTION } from "../enums/Connection";
 import { Reading } from "./Reading";
 
 export type Data = {
