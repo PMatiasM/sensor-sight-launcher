@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from "electron";
 import { PortInfo } from "@serialport/bindings-interface";
 import { Config } from "../types/Config";
 import { Data } from "../types/Data";
+import { Experiment } from "../types/Experiment";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   // Main
@@ -9,12 +10,28 @@ contextBridge.exposeInMainWorld("electronAPI", {
   close: () => ipcRenderer.send("close"),
 
   // Database
+  // Config
   getConfig: () => ipcRenderer.send("get-config"),
   config: (
     callback: (event: Electron.IpcRendererEvent, config: Config) => void
   ) => ipcRenderer.on("config", callback),
   updateConfig: (config: Config) => ipcRenderer.send("update-config", config),
   resetConfig: () => ipcRenderer.send("reset-config"),
+  // Experiment
+  getExperiment: () => ipcRenderer.send("get-experiment"),
+  experiment: (
+    callback: (
+      event: Electron.IpcRendererEvent,
+      defaultExperiment: Experiment[],
+      userExperiment: Experiment[]
+    ) => void
+  ) => ipcRenderer.on("experiment", callback),
+  createExperiment: (experiment: Experiment) =>
+    ipcRenderer.send("create-experiment", experiment),
+  updateExperiment: (id: string, experiment: Experiment) =>
+    ipcRenderer.send("update-experiment", id, experiment),
+  deleteExperiment: (id: string) => ipcRenderer.send("delete-experiment", id),
+  // Data
   getData: () => ipcRenderer.send("get-data"),
   data: (callback: (event: Electron.IpcRendererEvent, data: Data[]) => void) =>
     ipcRenderer.on("data", callback),

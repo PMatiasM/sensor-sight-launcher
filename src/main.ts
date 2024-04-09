@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { join } from "node:path";
 import { config } from "./config";
 import DatabaseService from "./services/Database";
@@ -13,6 +13,7 @@ function createWindow() {
     fullscreen: false,
     frame: false,
     autoHideMenuBar: true,
+    backgroundColor: "#201c1c",
     webPreferences: {
       preload: join(__dirname, "preloads", "preload.js"),
       experimentalFeatures: true,
@@ -45,22 +46,6 @@ function createWindow() {
 
   win.webContents.session.on("will-download", (event, item, webContents) => {
     item.setSaveDialogOptions({ title: "Export Data" });
-  });
-
-  win.on("close", async (event) => {
-    const url = new URL(win.webContents.getURL());
-    if (url.pathname !== "/dashboard") {
-      return;
-    }
-    event.preventDefault();
-    const { response } = await dialog.showMessageBox(win, {
-      type: "question",
-      title: "  Confirm  ",
-      message: "Are you sure that you want to close this window?",
-      buttons: ["Yes", "No"],
-    });
-
-    response === 0 && win.destroy();
   });
 
   win.loadURL(config.launcher.URI);

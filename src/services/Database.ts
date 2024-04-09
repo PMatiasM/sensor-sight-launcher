@@ -5,6 +5,7 @@ import { config } from "../config";
 import { Database } from "../types/Database";
 import { Config } from "../types/Config";
 import { Data } from "../types/Data";
+import { Experiment } from "../types/Experiment";
 
 export default class DatabaseService {
   private _path: string = join(app.getAppPath(), config.launcher.databaseFile);
@@ -21,6 +22,21 @@ export default class DatabaseService {
     ipcMain.on("update-config", (_, config: Config) => {
       this._updateConfig(config);
       this._sendConfig(window);
+    });
+    ipcMain.on("get-experiment", () => {
+      this._sendExperiment(window);
+    });
+    ipcMain.on("create-experiment", (_, experiment: Experiment) => {
+      this._createExperiment(experiment);
+      this._sendExperiment(window);
+    });
+    ipcMain.on("update-experiment", (_, id: string, experiment: Experiment) => {
+      this._updateExperiment(id, experiment);
+      this._sendExperiment(window);
+    });
+    ipcMain.on("delete-experiment", (_, id: string) => {
+      this._deleteExperiment(id);
+      this._sendExperiment(window);
     });
     ipcMain.on("get-data", () => {
       this._sendData(window);
@@ -50,6 +66,38 @@ export default class DatabaseService {
 
   private _resetConfig() {
     this._db.config.user = { ...this._db.config.default };
+    this._writeData();
+    this._db = this._readData();
+  }
+
+  private _sendExperiment(window: BrowserWindow) {
+    window.webContents.send(
+      "experiment",
+      this._db.experiment.default,
+      this._db.experiment.user
+    );
+  }
+
+  private _createExperiment(experiment: Experiment) {
+    this._db.experiment.user.push({ ...experiment });
+    this._writeData();
+    this._db = this._readData();
+  }
+
+  private _updateExperiment(id: string, experiment: Experiment) {
+    const index = this._db.experiment.user.findIndex(
+      (experiment) => experiment.id === id
+    );
+    this._db.experiment.user[index] = { ...experiment };
+    this._writeData();
+    this._db = this._readData();
+  }
+
+  private _deleteExperiment(id: string) {
+    const index = this._db.experiment.user.findIndex(
+      (experiment) => experiment.id === id
+    );
+    this._db.experiment.user.splice(index, 1);
     this._writeData();
     this._db = this._readData();
   }

@@ -19,5 +19,9 @@
       "serial": { "baudRate": 115200, "delimiter": "\r\n" }
     }
   },
+  "experiment": {
+    "default": [],
+    "user": []
+  },
   "data": []
 }
