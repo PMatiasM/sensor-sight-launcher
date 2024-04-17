@@ -8,6 +8,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // Main
   minimize: () => ipcRenderer.send("minimize"),
   close: () => ipcRenderer.send("close"),
+  cleanListeners: (channels: string[]) => {
+    for (let index = 0; index < channels.length; index++) {
+      const channel = channels[index];
+      ipcRenderer.removeAllListeners(channel);
+    }
+  },
 
   // Database
   // Config
@@ -36,12 +42,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   data: (callback: (event: Electron.IpcRendererEvent, data: Data[]) => void) =>
     ipcRenderer.on("data", callback),
   saveData: (data: Data) => ipcRenderer.send("save-data", data),
-  cleanListeners: (channels: string[]) => {
-    for (let index = 0; index < channels.length; index++) {
-      const channel = channels[index];
-      ipcRenderer.removeAllListeners(channel);
-    }
-  },
+  deleteData: (id: string) => ipcRenderer.send("delete-data", id),
 
   // Bluetooth
   cancelBluetoothRequest: () => ipcRenderer.send("cancel-bluetooth-request"),

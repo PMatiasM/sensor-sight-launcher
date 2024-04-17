@@ -3,6 +3,7 @@ import { Experiment } from "./Experiment";
 import { Reading } from "./Reading";
 
 export type Data = {
+  id: string;
   experiment: Experiment;
   device: string;
   connection: CONNECTION;

@@ -44,6 +44,10 @@ export default class DatabaseService {
     ipcMain.on("save-data", (_, data: Data) => {
       this._updateData(data);
     });
+    ipcMain.on("delete-data", (_, id: string) => {
+      this._deleteData(id);
+      this._sendData(window);
+    });
   }
 
   private _readData(): Database {
@@ -108,6 +112,15 @@ export default class DatabaseService {
 
   private _updateData(data: Data) {
     this._db.data.unshift(data);
+    this._writeData();
+    this._db = this._readData();
+  }
+
+  private _deleteData(id: string) {
+    const index = this._db.data.findIndex(
+      (data) => data.id === id
+    );
+    this._db.data.splice(index, 1);
     this._writeData();
     this._db = this._readData();
   }
