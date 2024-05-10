@@ -24,9 +24,9 @@ function createWindow() {
   ipcMain.on("minimize", () => win.minimize());
   ipcMain.on("close", () => win.close());
 
-  const databaseService = new DatabaseService(win);
-  const bluetoothService = new BluetoothService(win);
-  const serialService = new SerialService(win);
+  new DatabaseService(win);
+  new BluetoothService(win);
+  new SerialService(win);
 
   win.webContents.session.setPermissionCheckHandler(
     (webContents, permission, requestingOrigin, details) => {

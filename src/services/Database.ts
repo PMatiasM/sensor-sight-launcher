@@ -1,5 +1,5 @@
 import { BrowserWindow, app, ipcMain } from "electron";
-import { readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { config } from "../config";
 import { Database } from "../types/Database";
@@ -8,8 +8,12 @@ import { Data } from "../types/Data";
 import { Experiment } from "../types/Experiment";
 
 export default class DatabaseService {
-  private _path: string = join(app.getAppPath(), config.launcher.databaseFile);
-  private _db: Database = this._readData();
+  private _path: string = join(
+    app.getPath("appData"),
+    app.getName(),
+    config.launcher.databaseFile
+  );
+  private _db: Database = this._initializeDatabase();
 
   constructor(window: BrowserWindow) {
     ipcMain.on("get-config", () => {
@@ -48,6 +52,16 @@ export default class DatabaseService {
       this._deleteData(id);
       this._sendData(window);
     });
+  }
+
+  private _initializeDatabase(): Database {
+    if (!existsSync(this._path)) {
+      copyFileSync(
+        join(app.getAppPath(), config.launcher.databaseFile),
+        this._path
+      );
+    }
+    return this._readData();
   }
 
   private _readData(): Database {
@@ -117,9 +131,7 @@ export default class DatabaseService {
   }
 
   private _deleteData(id: string) {
-    const index = this._db.data.findIndex(
-      (data) => data.id === id
-    );
+    const index = this._db.data.findIndex((data) => data.id === id);
     this._db.data.splice(index, 1);
     this._writeData();
     this._db = this._readData();
