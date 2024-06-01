@@ -2,21 +2,21 @@
   "config": {
     "default": {
       "bluetooth": {
-        "primaryService": "heart_rate",
-        "characteristic": "heart_rate_measurement",
+        "primaryService": "50cf1bc4-2188-4618-8b94-d5fe302ba5c5",
+        "characteristic": "760e96d1-fb4c-4f5d-a3a3-95ea50bfba6e",
         "attemptsToFindTheDevice": 5
       },
       "network": { "URI": "http://127.0.0.1", "requestInterval": 500 },
-      "serial": { "baudRate": 115200, "delimiter": "\r\n" }
+      "serial": { "baudRate": 115200, "delimiter": "\n" }
     },
     "user": {
       "bluetooth": {
-        "primaryService": "heart_rate",
-        "characteristic": "heart_rate_measurement",
+        "primaryService": "50cf1bc4-2188-4618-8b94-d5fe302ba5c5",
+        "characteristic": "760e96d1-fb4c-4f5d-a3a3-95ea50bfba6e",
         "attemptsToFindTheDevice": 5
       },
       "network": { "URI": "http://127.0.0.1", "requestInterval": 500 },
-      "serial": { "baudRate": 115200, "delimiter": "\r\n" }
+      "serial": { "baudRate": 115200, "delimiter": "\n" }
     }
   },
   "experiment": {

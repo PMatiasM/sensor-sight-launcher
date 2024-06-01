@@ -11,9 +11,10 @@ function createWindow() {
     height: 720,
     resizable: false,
     fullscreen: false,
+    maximizable: false,
     frame: false,
     autoHideMenuBar: true,
-    backgroundColor: "#201c1c",
+    backgroundColor: "#111827",
     webPreferences: {
       preload: join(__dirname, "preloads", "preload.js"),
       experimentalFeatures: true,
